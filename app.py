@@ -40,7 +40,7 @@ df = pd.read_csv(DATA_PATH.joinpath("clinical_analytics.csv.gz"))
 dataset = pd.read_csv(DATA_PATH.joinpath("final_clean_busara.csv"))
 
 # NEW
-dataframe = pd.read_csv(DATA_PATH.joinpath("CleanedGFGP.csv"))  # NEW
+dataframe = pd.read_csv("CleanedGFGP.csv", encoding='ISO-8859-1')  # NEW
 
 # ------------------------------------
 
@@ -228,6 +228,20 @@ def generate_control_card():
 
             ),
             html.Br(),
+
+            html.P("Overal Assessment"),
+            html.P(id='overal-assessment', style={'color': '#FF7F00', 'display': 'inline-block',
+                                                   'font-weight': 'bold',  'font-size': '25px', 'text-align': 'center', 'margin-left': '0rem'}),
+            html.Hr(),
+
+            html.P("Risk Rating"),
+            html.P(id='risk-rating', style={'color': '#FF7F00', 'display': 'inline-block',
+                                                            'font-weight': 'bold',  'font-size': '25px', 'text-align': 'center', 'margin-left': '0rem'}),
+            html.Hr(),  
+
+            html.P("Risk Rating Details"),
+            html.Div(id='risk-rating-details', style={'font-size': '12px', 'font-style': 'italic','color':'black', 'text-align': 'justify' }),
+            html.Hr(),  
 
 
 
@@ -796,39 +810,10 @@ app.layout = html.Div(
                     }),
 
                 ], style={'display': 'flex'}),
-                html.Hr(),
-
-
-                # Patient Volume Heatmap
-                html.Div(
-                    id="patient_volume_card",
-                    children=[
-                        html.B("INSTITUTIONS PER COUNTRY"),
-                        html.Hr(),
-                        # dcc.Graph(id="patient_volume_hm"),
-                        # dbc.Spinner(children=[
-                        #     dcc.Graph(id='country-bubble-chart',
-                        #               style={'height': '70vh'}, config={'displayModeBar': False},
-                        #               figure={'layout': {'plot_bgcolor': 'lightgray'}})], size="lg", color="success", type="border", fullscreen=False, spinner_style={'width': '6rem', 'height': '6rem'}),
-
-                        dcc.Interval(
-                            id='interval-component',
-                            # Update every hour (adjust as needed)
-                            interval=1000 * 60*60,
-                            n_intervals=0
-                        ),
-                        dbc.Spinner(children=[
-                            dcc.Graph(id='country_graph',
-                                      style={'height': '40vh',
-                                             'autosize': 'true'},
-                                      figure={'layout': {'plot_bgcolor': 'lightgray'}})], size="lg", color="success", type="border", fullscreen=True, spinner_style={'width': '6rem', 'height': '6rem'}),
-
-
-                    ],
-                ),
+             
 
                 html.Br(),
-                html.Br(),
+           
                 # INSTITUTION SCORES
                 html.Div(
                     id="inst_scores",
@@ -841,6 +826,8 @@ app.layout = html.Div(
                         html.P(id='country_in_quest', style={
                             'font-size': '18px', 'font-weight': 'bold', 'text-align': 'left', 'color': '#022896'}),
                         html.Hr(),
+                       
+                        
 
                         # INSTITUTION DEPARTMENTS
                         html.Div(
@@ -874,6 +861,24 @@ app.layout = html.Div(
                                                      html.P(id='socialogy_dept', style={
                                                          'font-size': '15px', 'font-weight': 'bold', 'text-align': 'center', 'margin-top': '0rem'})
                                                  ], style={'width': '33.3%', 'text-align': '-webkit-center', 'margin-inline': '2rem'}),
+                                            
+                                            html.Div(
+                                                 id="grantsmgnt",
+                                                 className="top",
+                                                 children=[
+                                                     html.P("Grants Management", style={
+                                                         'font-size': '11px', 'font-weight': 'bold', 'text-align': 'center'}),
+                                                     
+                                                 ], style={'width': '33.3%', 'text-align': '-webkit-center', 'margin-inline': '2rem'}),
+
+                                            html.Div(
+                                                 id="audit",
+                                                 className="top",
+                                                 children=[
+                                                     html.P("Audit", style={
+                                                         'font-size': '11px', 'font-weight': 'bold', 'text-align': 'center'}),
+                                                     
+                                                 ], style={'width': '33.3%', 'text-align': '-webkit-center', 'margin-inline': '2rem'}),
 
 
                                          ], style={'display': 'inline-flex', 'width': '100%'}),], style={'text-align': 'center'},
@@ -889,10 +894,10 @@ app.layout = html.Div(
                                          children=[
                                              html.P(id='gfgp_assessment_level', style={
                                                  'font-size': '18px', 'font-weight': 'bold', 'text-align': 'center', 'color': '#022896'}),
-
-
+                                            html.Img(id="assessment_level_image", style={'height': '14rem', 'text-align': 'center'}),
 
                                          ], style={'width': '33.3%', 'text-align': '-webkit-center', 'margin-inline': '2rem'}),
+                                          
 
                                      html.Div(
                                          id="output_scores_",
@@ -927,10 +932,346 @@ app.layout = html.Div(
 
                                          ], style={'width': '33.3%', 'text-align': '-webkit-center', 'margin-inline': '2rem'}),
 
-                                 ], style={'display': 'inline-flex', 'width': '100%'}),], style={'background': 'white'}
-                ),
-                html.Hr(),
+                                         html.Div(
+                                         id="grants",
+                                         className="top",
+                                         children=[                                    
+                                            html.P('Presence of Grants Administration and Management Policy ', style={'color': '#00000',
+                                                                'font-weight': 'bold',  'font-size': '14px', 'text-align': 'center', 'margin-left': '1rem','margin-top': '2rem'}),
 
+                                            html.P(id = 'grants-management', style={'color': '#FF7F00',
+                                                                'font-weight': 'bold',  'font-size': '18px', 'text-align': 'center', 'margin-left': '1rem', 'margin-top': '1rem'}),           
+
+                                         ], style={'width': '33.3%', 'text-align': '-webkit-center', 'margin-inline': '2rem'}),
+
+                                        html.Div(
+                                         id="audit-details",
+                                         className="top",
+                                         children=[                                    
+                                            html.P('Presence of Audit Units', style={'color': '#00000',
+                                                                'font-weight': 'bold',  'font-size': '14px', 'text-align': 'center', 'margin-left': '1rem','margin-top': '2rem'}),
+
+                                            html.P(id = 'internal-audit', style={'color': '#FF7F00',
+                                                                'font-weight': 'bold',  'font-size': '18px', 'text-align': 'center', 'margin-left': '1rem', 'margin-top': '1rem'}),  
+                                            html.P(id = 'external-audit', style={'color': '#FF7F00',
+                                                                'font-weight': 'bold',  'font-size': '18px', 'text-align': 'center', 'margin-left': '1rem', 'margin-top': '1rem'}),           
+
+                                         ], style={'width': '33.3%', 'text-align': '-webkit-center', 'margin-inline': '2rem'}),
+
+                                 ], style={'display': 'inline-flex', 'width': '100%'}),                                
+
+
+                                 html.Div(id="financial section",                                          
+                                 children=[                                     
+                                     html.Div(
+                                         id="financial_management",
+                                         className="top",
+                                         children=[
+                                             dbc.Card([
+                                                  html.P('Financial Management', style={'color': '#FF7F00',
+                                                                'font-weight': 'bold',  'font-size': '18px', 'text-align': 'center', 'margin-left': '1rem'}),
+                                              
+                                                dbc.CardBody(
+                                                    [html.Div( id='financial_table', ),  ]
+                                                ),
+                                                ], style={
+                                                    'height': '26rem',
+                                                    'overflowY': 'auto',
+                                                    'font-size': '12px',
+                                                    'line-height': '1',
+                                                    'width': '100%',
+                                                }),
+
+                                            ], style={'width': '48%', 'text-align': '-webkit-center', 'margin-inline': '0rem'}),
+                                        html.Div(
+                                         id="gap",
+                                         className="top",
+                                         children=[
+                                             dbc.Card([
+                                                ], style={
+                                                    'height': '26rem',
+                                                    'overflowY': 'auto',
+                                                    'font-size': '12px',
+                                                    'line-height': '1',
+                                                    'width': '100%',
+                                                }),
+
+                                            ], style={'width': '1%', 'text-align': '-webkit-center', 'margin-inline': '0rem'}),
+
+                                        html.Div(
+                                         id="procurement",
+                                         className="top",
+                                         children=[
+                                             dbc.Card([
+                                                  html.P('Procurement', style={'color': '#FF7F00',
+                                                                'font-weight': 'bold',  'font-size': '18px', 'text-align': 'center', 'margin-left': '1rem'}),
+                                              
+                                              
+                                                dbc.CardBody(
+                                                    [html.Div( id='procurement_table', ),  ]
+                                                ),
+                                                ], style={
+                                                    'height': '26rem',
+                                                    'overflowY': 'auto',
+                                                    'font-size': '12px',
+                                                    'line-height': '1',
+                                                    'width': '100%',
+                                                }),
+
+                                            ], style={'width': '48%', 'text-align': '-webkit-center', 'margin-inline': '0rem'}),
+
+                                 ], style={'display': 'inline-flex', 'width': '100%'}),
+                                html.Hr(),
+                                html.Br(),
+                                html.Br(),
+                                html.Hr(),
+                                html.Br(),
+
+                                 html.Div(id="HR section",                                          
+                                 children=[                                     
+                                     html.Div(
+                                         id="hr_management",
+                                         className="top",
+                                         children=[
+                                             dbc.Card([
+                                                  html.P('Human Resources', style={'color': '#FF7F00',
+                                                                'font-weight': 'bold',  'font-size': '18px', 'text-align': 'center', 'margin-left': '1rem'}),
+                                              
+                                                dbc.CardBody(
+                                                    [html.Div( id='hr_table', ),  ]
+                                                ),
+                                                ], style={
+                                                    'height': '26rem',
+                                                    'overflowY': 'auto',
+                                                    'font-size': '12px',
+                                                    'line-height': '1',
+                                                    'width': '100%',
+                                                }),
+
+                                            ], style={'width': '48%', 'text-align': '-webkit-center', 'margin-inline': '0rem'}),
+                                        html.Div(
+                                         id="gap3",
+                                         className="top",
+                                         children=[
+                                             dbc.Card([
+                                                ], style={
+                                                    'height': '26rem',
+                                                    'overflowY': 'auto',
+                                                    'font-size': '12px',
+                                                    'line-height': '1',
+                                                    'width': '100%',
+                                                }),
+
+                                            ], style={'width': '1%', 'text-align': '-webkit-center', 'margin-inline': '0rem'}),
+
+                                        html.Div(
+                                         id="governance",
+                                         className="top",
+                                         children=[
+                                             dbc.Card([
+                                                  html.P('Governance', style={'color': '#FF7F00',
+                                                                'font-weight': 'bold',  'font-size': '18px', 'text-align': 'center', 'margin-left': '1rem'}),
+                                              
+                                              
+                                                dbc.CardBody(
+                                                    [html.Div( id='governance_table', ),  ]
+                                                ),
+                                                ], style={
+                                                    'height': '26rem',
+                                                    'overflowY': 'auto',
+                                                    'font-size': '12px',
+                                                    'line-height': '1',
+                                                    'width': '100%',
+                                                }),
+
+                                            ], style={'width': '48%', 'text-align': '-webkit-center', 'margin-inline': '0rem'}),
+
+                                 ], style={'display': 'inline-flex', 'width': '100%'}),
+                                     html.Hr(),
+                                html.Br(),
+                                html.Br(),
+                                html.Hr(),
+                                html.Br(),
+
+                                 html.Div(id="Risk section",                                          
+                                 children=[                                     
+                                     html.Div(
+                                         id="risk_management",
+                                         className="top",
+                                         children=[
+                                             dbc.Card([
+                                                  html.P('Risk Management', style={'color': '#FF7F00',
+                                                                'font-weight': 'bold',  'font-size': '18px', 'text-align': 'center', 'margin-left': '1rem'}),
+                                              
+                                                dbc.CardBody(
+                                                    [html.Div( id='risk_table', ),  ]
+                                                ),
+                                                ], style={
+                                                    'height': '26rem',
+                                                    'overflowY': 'auto',
+                                                    'font-size': '12px',
+                                                    'line-height': '1',
+                                                    'width': '100%',
+                                                }),
+
+                                            ], style={'width': '48%', 'text-align': '-webkit-center', 'margin-inline': '0rem'}),
+                                        html.Div(
+                                         id="gap4",
+                                         className="top",
+                                         children=[
+                                             dbc.Card([
+                                                ], style={
+                                                    'height': '26rem',
+                                                    'overflowY': 'auto',
+                                                    'font-size': '12px',
+                                                    'line-height': '1',
+                                                    'width': '100%',
+                                                }),
+
+                                            ], style={'width': '1%', 'text-align': '-webkit-center', 'margin-inline': '0rem'}),
+
+                                        html.Div(
+                                         id="fiduciary",
+                                         className="top",
+                                         children=[
+                                             dbc.Card([
+                                                  html.P('Summary of Fiduciary Risks', style={'color': '#FF7F00',
+                                                                'font-weight': 'bold',  'font-size': '18px', 'text-align': 'center', 'margin-left': '1rem'}),
+                                              
+                                              
+                                                dbc.CardBody(
+                                                    [html.Div( id='fiduciary_table', ),  ]
+                                                ),
+                                                ], style={
+                                                    'height': '26rem',
+                                                    'overflowY': 'auto',
+                                                    'font-size': '12px',
+                                                    'line-height': '1',
+                                                    'width': '100%',
+                                                }),
+
+                                            ], style={'width': '48%', 'text-align': '-webkit-center', 'margin-inline': '0rem'}),
+
+                                 ], style={'display': 'inline-flex', 'width': '100%'})
+                                 
+                                 ,], style={'background': 'white'}
+                                 
+                ),
+                       html.Hr(),
+                html.Br(),
+                html.Br(),
+             
+
+               html.Div(
+                    id="viz",
+                    children=[
+                        html.B("VISUALIZATIONS", style={'vertical-align': 'sub'})
+                    ],
+                    style={
+                        'text-align': 'center',
+                        'background': 'white',
+                        'height':'3rem'
+                       
+                    }
+                ),
+           
+
+
+
+                # Patient Volume Heatmap
+                html.Div(
+                    id="patient_volume_card",
+                    children=[
+                        html.B("INSTITUTIONS PER COUNTRY"),
+                        html.Hr(),
+
+                        dcc.Interval(
+                            id='interval-component',
+                            # Update every hour (adjust as needed)
+                            interval=1000 * 60*60,
+                            n_intervals=0
+                        ),
+                        dbc.Spinner(children=[
+                            dcc.Graph(id='country_graph',
+                                      style={'height': '40vh',
+                                             'autosize': 'true'},
+                                      figure={'layout': {'plot_bgcolor': 'lightgray'}})], size="lg", color="success", type="border", fullscreen=True, spinner_style={'width': '6rem', 'height': '6rem'}),
+
+                    ],
+                ),
+
+               
+                html.Br(),
+                html.Hr(),
+                html.Br(),
+
+                html.Div(id="bar-graphes",
+                            children=[
+                                html.Div(
+                                
+                                    id="assessment-pie",
+                                    className="top",
+                                    children=[
+                                        dcc.Graph(id='assessment-chart'),
+                                    ], style={'width': '49%', 'text-align': '-webkit-center', 'margin-inline': '2rem'}),
+                                    
+
+                                html.Div(
+                                    id="risk-gap",
+                                    className="top",
+                                    children=[
+                                                                                
+
+                                    ], style={'width': '2%', 'text-align': '-webkit-center', 'margin-inline': '2rem', 'background':'#F4F4F4'}),
+                            html.Div(
+                                    id="risk-pie",
+                                    className="top",
+                                    children=[
+                                        
+                                        dcc.Graph(id='risk-rating-chart'),                                           
+
+                                    ], style={'width': '49%', 'text-align': '-webkit-center', 'margin-inline': '2rem'}),
+                            
+
+                            ], style={'display': 'inline-flex', 'width': '100%', 'background':'white'}), 
+
+
+                html.Br(),
+                html.Hr(),
+                html.Br(),
+                    html.Div(
+                    id="patient_volume_cardxx",
+                    children=[
+                        html.B("KPMG's due diligence overall score"),
+                        html.Hr(),
+
+                        dcc.Interval(
+                            id='interval-componentxx',
+                            # Update every hour (adjust as needed)
+                            interval=1000 * 60*60,
+                            n_intervals=0
+                        ),
+                        dbc.Spinner(children=[
+                            dcc.Graph(id='diligence_graph',
+                                      style={'height': '40vh',
+                                             'autosize': 'true'},
+                                      figure={'layout': {'plot_bgcolor': 'lightgray'}})], size="lg", color="success", type="border", fullscreen=True, spinner_style={'width': '6rem', 'height': '6rem'}),
+
+                    ], style={'text-align': 'center', 'height':'50rem'}
+                ),
+
+
+                
+
+                # html.Div([
+                #     dcc.Graph(id='assessment-chart'),
+                # ]),
+
+                #  html.Div([
+                #     dcc.Graph(id='risk-rating-chart'),
+                # ])
+                
+                
                 # COMPARE INSTITUTIONS
 
 
@@ -1493,6 +1834,625 @@ def update_countryLists(country):
     final_table = html.Div(data_table)
     return country, final_table, top_institution, top_inst_country, total_institutions
 
+
+
+
+@app.callback(
+        [Output("financial_table", "children"),
+         Output("overal-assessment", "children"),         
+         Output("risk-rating", "children"),
+         Output("risk-rating-details", "children"),
+         Output("grants-management", "children"),
+         Output("internal-audit", "children"),
+         Output("external-audit", "children"),] ,     
+        [Input("institutions_selected", "value"),],
+)
+def financial(inst):
+    institution_data = dataframe[dataframe["Name of institution"] == inst]
+    pickeddata = institution_data[['Finance manual', 'Audit book',
+       'Audit Committee', 'Financial and budget committee',
+       'Developed an indirect cost recovery policy',
+       'Defined the minimum and maximum amount of cash for normal operations ',
+       'Complete assets register',
+       'Defined policy on safety and security of assets and ownership documents',
+       'Defined policy on use of assets',
+       'Defined policy on insurance of assets',
+       'Defined indirect expenditure allocation procedures',
+       'Consistency on asset disposal procedure as outlined ',
+       'Value of insurance cover for inventory',
+       'Policy for recording, retaining and disposing of all financial documents and data',
+       'Clear guidance on treatment of exchange rates and how any potential exchange gains or losses would be dealt with.',
+       'Guidelines on manual data addition to extracted financial reports',
+       'Weaknesses in the access to university online systems',
+       'Register on management of operational issues in financial management system',
+       'Defined process of returning inventory to storage ',
+       'Guidance on travel costs such as per-diem rates and recovery of mileage where personal vehicles are used',
+       'Procedure for cash disbursement to staff and accounting for the same.',
+       'Separation of duties in cash and bank management',
+       'Sub-grantee management']]
+    
+    melted_data = pd.melt(pickeddata)
+    risk_rating = institution_data['Risk Rating ']
+    overal_assessment = institution_data['Overall Assessment ']
+    risk_rating_details = institution_data['Details of the Risk Rating']
+    grants_management = list(institution_data['Grants administration and management policy '])
+    internal_audit = list(institution_data['Presence of an internal audit unit'])
+    external_audit = list(institution_data['external audit unit'])
+
+
+    if(str(grants_management[0]) == 'nan'):
+        grants_mgnt = 'N/A'
+    else:
+        grants_mgnt = grants_management[0]
+
+
+
+    if(str(internal_audit[0]) == 'nan'):
+        internal_adt = 'Intenal: N/A'
+    else:
+        internal_adt = 'Internal: '+internal_audit[0]
+
+
+
+
+    if(str(external_audit[0]) == 'nan'):
+        external_adt = 'External: N/A'
+    else:
+        external_adt = 'External: '+external_audit[0]
+
+  
+
+    
+   
+    melted_data.reset_index(inplace=False)
+    # print('****',melted_data)
+    melted_data.columns = ['Parameter', 'Assessment']
+
+
+    data_table = DataTable(
+    id='financial-data-table',
+    columns=[{"name": col, "id": col} for col in melted_data.columns],
+    
+    data=melted_data.to_dict('records'),
+    style_table={},
+
+    # style_cell_conditional=[
+
+    #     {'if': {'column_id': 'Number'}, 'width': '3rem'},
+    # ],
+    style_data={
+        'color': 'black',
+        'backgroundColor': 'white',
+        'textAlign': 'left',
+        'font-family': 'sans-serif',
+        'whiteSpace': 'normal'
+    },
+    style_data_conditional=[
+        {'if': {'row_index': 'odd'},
+            'backgroundColor': 'rgb(220, 220, 220)'},
+        {'if': {'column_id': 'Number'}, 'width': '30px'},
+        {'if': {'column_id': 'Institution Name'}, 'width': '500px'},
+
+    ],
+    style_header={
+        'backgroundColor': 'rgb(210, 210, 210)',
+        'color': 'black',
+        'fontWeight': 'bold',
+        'textAlign': 'left',
+        'font-family': 'sans-serif',
+
+    },
+    )
+
+    global financial_table
+    financial_table = html.Div(data_table)
+    return financial_table, overal_assessment, risk_rating, risk_rating_details, grants_mgnt, internal_adt, external_adt
+
+
+@app.callback(
+        Output("procurement_table", "children"),        
+        [Input("institutions_selected", "value"),],
+)
+def procurement(inst):
+    institution_data = dataframe[dataframe["Name of institution"] == inst]
+    # print(dataframe.columns)
+    pickeddata = institution_data[['University  procurement procedure documented in the finance manual /Procurement manual',
+       'University  procurement procedure is aligned with country  Public Procurement and Disposal of Public Assets Authority (PPDA)',
+       'Manual stipulating the procedure to be followed in identifying, selecting, and acquiring needed goods and services as economically as possible within specified standards of quality and service',
+       'Procedure on handling customer complaints ',
+       'Procedure for conducting frequent market checks',
+       'Security storage for vendor or supplier contracts']]
+
+    
+    melted_data = pd.melt(pickeddata)
+   
+    melted_data.reset_index(inplace=False)
+    # print('****',melted_data)
+    melted_data.columns = ['Parameter', 'Assessment']
+
+  
+
+    data_table = DataTable(
+    id='procurement-data-table',
+    columns=[{"name": col, "id": col} for col in melted_data.columns],
+    
+    data=melted_data.to_dict('records'),
+    style_table={},
+
+    # style_cell_conditional=[
+
+    #     {'if': {'column_id': 'Number'}, 'width': '3rem'},
+    # ],
+    style_data={
+        'color': 'black',
+        'backgroundColor': 'white',
+        'textAlign': 'left',
+        'font-family': 'sans-serif',
+        'whiteSpace': 'normal'
+    },
+    style_data_conditional=[
+        {'if': {'row_index': 'odd'},
+            'backgroundColor': 'rgb(220, 220, 220)'},
+        {'if': {'column_id': 'Number'}, 'width': '30px'},
+        {'if': {'column_id': 'Institution Name'}, 'width': '500px'},
+
+    ],
+    style_header={
+        'backgroundColor': 'rgb(210, 210, 210)',
+        'color': 'black',
+        'fontWeight': 'bold',
+        'textAlign': 'left',
+        'font-family': 'sans-serif',
+
+    },
+    )
+
+    global procurement_table
+    procurement_table = html.Div(data_table)
+    return procurement_table
+
+
+@app.callback(
+        Output("hr_table", "children"),        
+        [Input("institutions_selected", "value"),],
+)
+def humanresources(inst):
+ 
+    institution_data = dataframe[dataframe["Name of institution"] == inst]
+    # print(dataframe.columns)
+    pickeddata = institution_data[['Vacancy announcements  made outlining the minimum set of skills, knowledge, and experience necessary for a successful candidate ',
+       'Policy on separation of duties with regards to the  payroll system',
+       'Defined a management structure that deÞned roles, chain of command and authorizations levels',
+       'Mechanism for accounting for time spent by project staff such as timesheets',
+       'procedure for responding to allegations of bribery, corruption, and fraud',
+       'Whistleblowing hotline where staff and students can report suspected misconduct or illegal acts anonymously without having their identity known.',
+       'Documentation of training plans and staff development plan ',]]
+
+
+    
+    melted_data = pd.melt(pickeddata)
+   
+    melted_data.reset_index(inplace=False)
+    # print('****',melted_data)
+    melted_data.columns = ['Parameter', 'Assessment']
+
+
+
+    data_table = DataTable(
+    id='procurement-data-table',
+    columns=[{"name": col, "id": col} for col in melted_data.columns],
+    
+    data=melted_data.to_dict('records'),
+    style_table={},
+
+    # style_cell_conditional=[
+
+    #     {'if': {'column_id': 'Number'}, 'width': '3rem'},
+    # ],
+    style_data={
+        'color': 'black',
+        'backgroundColor': 'white',
+        'textAlign': 'left',
+        'font-family': 'sans-serif',
+        'whiteSpace': 'normal'
+    },
+    style_data_conditional=[
+        {'if': {'row_index': 'odd'},
+            'backgroundColor': 'rgb(220, 220, 220)'},
+        {'if': {'column_id': 'Number'}, 'width': '30px'},
+        {'if': {'column_id': 'Institution Name'}, 'width': '500px'},
+
+    ],
+    style_header={
+        'backgroundColor': 'rgb(210, 210, 210)',
+        'color': 'black',
+        'fontWeight': 'bold',
+        'textAlign': 'left',
+        'font-family': 'sans-serif',
+
+    },
+    )
+
+    global hr_table
+    hr_table = html.Div(data_table)
+    return hr_table
+
+
+@app.callback(
+        Output("governance_table", "children"),        
+        [Input("institutions_selected", "value"),],
+)
+def humanresources(inst):
+
+    institution_data = dataframe[dataframe["Name of institution"] == inst]
+    # print(dataframe.columns)
+    pickeddata = institution_data[['Principal Investigator (PI) responsible for oversight, budget control, risk management and decision-making regarding project implementation',
+       'University senior management is involved in the management of donor-funded projects',
+       'Presence of grants administration and management policy',
+       'Disaster recovery and business continuity plan.']]
+
+
+    
+    melted_data = pd.melt(pickeddata)
+   
+    melted_data.reset_index(inplace=False)
+    # print('****',melted_data)
+    melted_data.columns = ['Parameter', 'Assessment']
+
+
+
+    data_table = DataTable(
+    id='procurement-data-table',
+    columns=[{"name": col, "id": col} for col in melted_data.columns],
+    
+    data=melted_data.to_dict('records'),
+    style_table={},
+
+    # style_cell_conditional=[
+
+    #     {'if': {'column_id': 'Number'}, 'width': '3rem'},
+    # ],
+    style_data={
+        'color': 'black',
+        'backgroundColor': 'white',
+        'textAlign': 'left',
+        'font-family': 'sans-serif',
+        'whiteSpace': 'normal'
+    },
+    style_data_conditional=[
+        {'if': {'row_index': 'odd'},
+            'backgroundColor': 'rgb(220, 220, 220)'},
+        {'if': {'column_id': 'Number'}, 'width': '30px'},
+        {'if': {'column_id': 'Institution Name'}, 'width': '500px'},
+
+    ],
+    style_header={
+        'backgroundColor': 'rgb(210, 210, 210)',
+        'color': 'black',
+        'fontWeight': 'bold',
+        'textAlign': 'left',
+        'font-family': 'sans-serif',
+
+    },
+    )
+
+    global governance_table
+    governance_table = html.Div(data_table)
+    return governance_table
+
+
+
+@app.callback(
+        Output("risk_table", "children"),        
+        [Input("institutions_selected", "value"),],
+)
+def risks(inst):
+
+    institution_data = dataframe[dataframe["Name of institution"] == inst]
+    # print(dataframe.columns)
+    pickeddata = institution_data[['Well-documented risk management policy',
+       'Risk assessment performed for this project to identify risks inherent to the project and have in place mitigating measures.',
+       'Risk Management Committee (RMC) in place', 'Risk registers present',
+       'Disseminated its Code of Ethics to the public',
+       'Politically Exposed Persons (PEPs) in the institution',
+       'Environmental protection policy',
+       'Preseance of a Disaster Response Plan and disaster recovery testing ',
+       'Presence of succession plan']]
+
+
+    
+    melted_data = pd.melt(pickeddata)
+   
+    melted_data.reset_index(inplace=False)
+    # print('****',melted_data)
+    melted_data.columns = ['Parameter', 'Assessment']
+
+
+
+    data_table = DataTable(
+    id='procurement-data-table',
+    columns=[{"name": col, "id": col} for col in melted_data.columns],
+    
+    data=melted_data.to_dict('records'),
+    style_table={},
+
+    # style_cell_conditional=[
+
+    #     {'if': {'column_id': 'Number'}, 'width': '3rem'},
+    # ],
+    style_data={
+        'color': 'black',
+        'backgroundColor': 'white',
+        'textAlign': 'left',
+        'font-family': 'sans-serif',
+        'whiteSpace': 'normal'
+    },
+    style_data_conditional=[
+        {'if': {'row_index': 'odd'},
+            'backgroundColor': 'rgb(220, 220, 220)'},
+        {'if': {'column_id': 'Number'}, 'width': '30px'},
+        {'if': {'column_id': 'Institution Name'}, 'width': '500px'},
+
+    ],
+    style_header={
+        'backgroundColor': 'rgb(210, 210, 210)',
+        'color': 'black',
+        'fontWeight': 'bold',
+        'textAlign': 'left',
+        'font-family': 'sans-serif',
+
+    },
+    )
+
+    global risk_table
+    risk_table = html.Div(data_table)
+    return risk_table
+
+
+@app.callback(
+        Output("fiduciary_table", "children"),        
+        [Input("institutions_selected", "value"),],
+)
+def fiduciary(inst):
+
+    institution_data = dataframe[dataframe["Name of institution"] == inst]
+    # print(dataframe.columns)
+    pickeddata = institution_data[['Disaster recovery and business continuity plan had not been put in place',
+       'Payroll processing roles not sufficiently separated',
+       'Indirect cost recovery policy had not been formulated',
+       'Undefined cash limits for normal operations',
+       'Risk assessment guidelines / policy had not been defined',
+       'Lack of an environmental protection policy',
+       'Lack of a policy for recording, retaining and disposing of financial information',
+       'Organogram had not been documented',
+       'Procedure for valuation of inventory insurance cover had not been defined/Weakness in Inventory Management',
+       'Undefined procedure for returning inventory to store after usage',
+       'Undefined insurance policy on inventory',
+       'Procedure on asset verification had not been documented',
+       'Procedure for recording time spent by project staff had not been documented',
+       'The university did not have a policy for establishing and reviewing the salary structure',
+       'Politically Exposed Entity and Persons (PIE/PEPs)',
+       'No guidance on exchange rate assumptions',
+       'No guidance on the definition and treatment of in-kind contributions',
+       'Inadequate cash and bank management procedures',
+       'Undefined procedures on monitoring budget execution',
+       'Weaknesses in asset management',
+       'Weaknesses around financial reporting and enhancing compliance to grant conditions',
+       'Undefined provisions in the procurement procedure manual',
+       'Lack of a risk register',
+       'Training needs assessments had not been conducted',
+       'No formal policy on in-kind contributions',
+       'Weakness in the contract management process',
+       'Absence of procedure on identifying and resolving operational issues within the financial system',
+       'Absence of a documented procedure on sub-grantee and sub-contractor contract management',
+       'Lack of a whistleblowing policy.',
+       'Weaknesses in the access to university online systems.1',
+       'Misalignment in the asset disposal procedure as outlined in FAM and ADM',
+       'Undefined process for approval of project budget overruns',
+       'Absence of requirement for recruitment staff to declare their conflict of interest.',
+       'Absence of a succession plan',
+       'There are no procedures for guiding on cash advanced to staff and accounting for the same',
+       'There are no policy guidelines in managing travel expenses such as per diem and mileage recovery',
+       'Inadequate procedures for accounting for project funds received in the UniversityÕs bank account',
+       'Inadequate separation of duties in the preparation and review of bank reconciliations',
+       'There are no procedures for checking market prices for goods and services']]
+
+
+    
+    melted_data = pd.melt(pickeddata)
+   
+    melted_data.reset_index(inplace=False)
+    # print('****',melted_data)
+    melted_data.columns = ['Parameter', 'Assessment']
+
+
+
+    data_table = DataTable(
+    id='procurement-data-table',
+    columns=[{"name": col, "id": col} for col in melted_data.columns],
+    
+    data=melted_data.to_dict('records'),
+    style_table={},
+
+    # style_cell_conditional=[
+
+    #     {'if': {'column_id': 'Number'}, 'width': '3rem'},
+    # ],
+    style_data={
+        'color': 'black',
+        'backgroundColor': 'white',
+        'textAlign': 'left',
+        'font-family': 'sans-serif',
+        'whiteSpace': 'normal'
+    },
+    style_data_conditional=[
+        {'if': {'row_index': 'odd'},
+            'backgroundColor': 'rgb(220, 220, 220)'},
+        {'if': {'column_id': 'Number'}, 'width': '30px'},
+        {'if': {'column_id': 'Institution Name'}, 'width': '500px'},
+
+    ],
+    style_header={
+        'backgroundColor': 'rgb(210, 210, 210)',
+        'color': 'black',
+        'fontWeight': 'bold',
+        'textAlign': 'left',
+        'font-family': 'sans-serif',
+
+    },
+    )
+
+    global fiduciary_table
+    fiduciary_table = html.Div(data_table)
+    return fiduciary_table
+
+@app.callback(
+    Output('assessment-chart', 'figure'),
+    [Input("institutions_selected", "value"),],
+)
+def update_pie_chart(value):
+    # Count the occurrences of each level
+    level_counts = dataframe['GFGP Assessment Level'].value_counts()
+
+    custom_colors = {
+        'Level 1': 'green',
+        'Level 2': 'orange',
+        'Level 3': 'red',
+        # Add more levels and colors as needed
+    }
+
+    # Create a pie chart using Plotly Express
+    fig = px.pie(
+        values=level_counts.values,
+        names=level_counts.index,
+        title='GFGP Assessment Levels Distribution',
+        labels={'label': 'GFGP Assessment Level', 'values': 'Count'},
+        color=level_counts.index,
+        color_discrete_map=custom_colors,
+    )
+    fig.update_layout(title_x=0.5)
+
+    return fig
+
+@app.callback(
+    Output('risk-rating-chart', 'figure'),
+    [Input("institutions_selected", "value"),],
+)
+def update_pie_chart(value):
+    # Count the occurrences of each level
+    level_counts = dataframe['Risk Rating '].value_counts()
+
+    custom_colors = {
+        'Level 1': 'green',
+        'Level 2': 'orange',
+        'Level 3': 'red',
+        # Add more levels and colors as needed
+    }
+
+    # Create a pie chart using Plotly Express
+    fig = px.pie(
+        values=level_counts.values,
+        names=level_counts.index,
+        title='Risk Rating Distribution',
+        labels={'label': 'GFGP Assessment Level', 'values': 'Count'},
+        color=level_counts.index,
+        color_discrete_map=custom_colors,
+    )
+    fig.update_layout(title_x=0.5)
+
+    return fig
+
+# @app.callback(
+#     [Output("financial_table", "children"),],
+#     inputs=Input("institutions_selected", "value"),
+# )
+# def update_inst_financial(institution):
+#     print(institution)
+
+#     institution_data = dataframe[dataframe["Name of institution"] == institution]
+    
+#     total_institutions = len(dataframe)
+#     if str(country) == 'All Countries' or str(country) == 'None':
+#         country = 'All Countries'
+#         df = dataframe
+#     else:
+#         df = dataframe[dataframe["Country"] == country]
+
+#     # Convert the "assessment" column to a Categorical data type with the custom order
+#     df['GFGP Assessment Level'] = pd.Categorical(
+#         df['GFGP Assessment Level'], categories=custom_order, ordered=True)
+
+#     # Sort the DataFrame based on the "assessment" column and then the "KPMG's due diligence overall score" column
+#     filtered_data = df.sort_values(
+#         ['GFGP Assessment Level', "KPMG's due diligence overall score"], ascending=[True, False])
+
+#     # grouped_data = df.groupby('GFGP Assessment Level')
+#     # filtered_data = grouped_data.apply(lambda x: x.sort_values(
+#     #     "KPMG's due diligence overall score", ascending=False))
+
+#     # filtered_data = df.sort_values(
+#     #     "KPMG's due diligence overall score", ascending=False)
+
+#     if (len(filtered_data) > 0):
+#         top_institution = filtered_data['Name of institution'].iloc[0]
+#         top_inst_country = filtered_data['Country'].iloc[0]
+
+#     else:
+#         top_institution = 'None'
+#         top_inst_country = ''
+
+#     if country == 'All Countries':
+#         top_inst_country = 'COUNTRY: '+top_inst_country
+#     else:
+#         top_inst_country = ''
+
+#     filtered_data['Number'] = range(1, len(filtered_data) + 1)
+
+#     # Swap the columns in the DataFrame
+#     filtered_data = filtered_data[['Number'] +
+#                                   list(filtered_data.columns[:-1])]
+
+#     filtered_data = filtered_data[[
+#         'Number', 'Name of institution', 'GFGP Self-Assessment Score', 'GFGP Assessment Level', "KPMG's due diligence overall score"]]
+
+#     data_table = DataTable(
+#         id='data-table',
+#         columns=[{"name": col, "id": col} for col in filtered_data.columns],
+#         data=filtered_data.to_dict('records'),
+#         style_table={},
+
+#         # style_cell_conditional=[
+
+#         #     {'if': {'column_id': 'Number'}, 'width': '3rem'},
+#         # ],
+#         style_data={
+#             'color': 'black',
+#             'backgroundColor': 'white',
+#             'textAlign': 'left',
+#             'font-family': 'sans-serif',
+#             'whiteSpace': 'normal'
+#         },
+#         style_data_conditional=[
+#             {'if': {'row_index': 'odd'},
+#                 'backgroundColor': 'rgb(220, 220, 220)'},
+#             {'if': {'column_id': 'Number'}, 'width': '30px'},
+#             {'if': {'column_id': 'Institution Name'}, 'width': '500px'},
+
+#         ],
+#         style_header={
+#             'backgroundColor': 'rgb(210, 210, 210)',
+#             'color': 'black',
+#             'fontWeight': 'bold',
+#             'textAlign': 'left',
+#             'font-family': 'sans-serif',
+
+#         },
+#     )
+
+#     global final_table
+#     final_table = html.Div(data_table)
+#     return final_table
+
 # TOP INSTITUTIONS TABLES
 # INPUT
 
@@ -1826,10 +2786,21 @@ def make_country_graph(interval):
             y=result_df["Number of Institutions"],
             name="",
             width=0.4,
-
-            # text=result_df["Number of Institutions"],
+          
 
         ),
+    ]
+
+
+    annotations = [
+        dict(
+            x=result_df['Country'][i],
+            y=result_df['Number of Institutions'][i],
+            text=result_df['Number of Institutions'][i],
+            xanchor='center',
+            yanchor='bottom',
+            showarrow=False,
+        ) for i in range(len(result_df))
     ]
 
     # lDict_count = copy.deepcopy(lDict)
@@ -1848,6 +2819,7 @@ def make_country_graph(interval):
             center=dict(lon=-78.05, lat=42.54),
             zoom=7,
         ),
+        annotations=annotations,
     )
 
     lDict_count["title"] = ""
@@ -1859,6 +2831,98 @@ def make_country_graph(interval):
 
     figure = dict(data=gData, layout=lDict_count)
     return figure
+
+
+
+@app.callback(
+    Output("diligence_graph", "figure"),
+    Input('interval-component', 'n_intervals'),
+)
+def make_dilligence_graph(interval):
+    df = dataframe
+    country_vals = {}
+
+    
+    result_df = df.dropna(subset=["KPMG's due diligence overall score", 'Name of institution'])
+
+
+    result_df = result_df[["Name of institution","KPMG's due diligence overall score"]]
+    
+
+
+    # Rename the columns for clarity
+    result_df.columns = ['Country', 'Number of Institutions']
+    # result_df = result_df.sort_values(
+    #     by='Number of Institutions', ascending=True)
+
+    result_df.index = result_df['Country']
+
+    gData = [
+        dict(
+            type="scatter",
+            mode="markers",
+            x=result_df.index,
+            y=result_df["Number of Institutions"] / 2,
+            name="Number Of Institutions",
+            opacity=0,
+            hoverinfo="skip",
+        ),
+        dict(
+            type="bar",
+            x=result_df.index,
+            y=result_df["Number of Institutions"],
+            name="",
+            width=0.4,
+          
+
+        ),
+    ]
+
+    annotations = [
+        dict(
+            x=result_df['Country'][i],
+            y=result_df['Number of Institutions'][i],
+            text=result_df['Number of Institutions'][i],
+            xanchor='center',
+            yanchor='bottom',
+            showarrow=False,
+        ) for i in range(len(result_df))
+    ]
+
+    # lDict_count = copy.deepcopy(lDict)
+    lDict_count = dict(
+        autosize=True,
+        automargin=True,
+        margin=dict(l=30, r=30, b=20, t=40),
+        hovermode="closest",
+        plot_bgcolor="#F9F9F9",
+        paper_bgcolor="#F9F9F9",
+        legend=dict(font=dict(size=10), orientation="v"),
+        title="",
+        mapbox=dict(
+            # accesstoken=mapbox_access_token,
+            style="light",
+            center=dict(lon=-78.05, lat=42.54),
+            zoom=7,
+        ),
+        annotations=annotations,
+    )
+
+    lDict_count["title"] = ""
+    lDict_count["dragmode"] = "select"
+    lDict_count["showlegend"] = False
+    lDict_count["autosize"] = True
+    lDict_count["xaxis"] = dict(tickangle=-10)
+    # lDict_count["xaxis"] = dict(tickangle=0, tickmode='auto', automargin=True)  # Set tickangle to 0 and enable automargin for label wrapping
+    # lDict_count["xaxis"] = dict(tickangle=0, tickmode='array', tickvals=list(result_df.index), ticktext=list(result_df.index), automargin=True)
+
+    lDict_count["margin"]["b"] = 150
+
+    figure = dict(data=gData, layout=lDict_count)
+    return figure
+
+
+
 
 
 # --------------------SELECTING AN INSTITUTION-----------------------------------
@@ -1967,31 +3031,34 @@ def update_graphs(institution_one, institution_two):
             Output("kpmg_due_dilligence_score", "value"),
             Output("inst_in_quest", "children"),
             Output("country_in_quest", "children"),
+            Output("assessment_level_image", "src"),
 
             ],
     inputs=Input("institutions_selected", "value"),
 )
 def update_gauge(institution):
 
-    print(institution)
-
     if institution:
         df = dataframe[dataframe["Name of institution"] == institution]
         gfgp_self_assessment_score = df['GFGP Self-Assessment Score'].iloc[0]
-        gfgp_assessment_level = df['GFGP Assessment Level'].iloc[0]
+        gfgp_assessment_level = df['GFGP Assessment Level'].iloc[0]        
         kpmg_due_dilligence_score = df["KPMG's due diligence overall score"].iloc[0]
         detail = str('Institution: '+institution)
         county = str('Country: '+df['Country'].iloc[0])
 
-        # overall_score = df['SCORE'].iloc[0]
-        # medical_dept = df['Medical Dep'].iloc[0]
-        # socialogy_dept = df['Sociology'].iloc[0]
-        # agriculture_dept = df['Agri Dep'].iloc[0]
-        # business_dept = df['Business/ commerce/Economics Dep'].iloc[0]
-        print(gfgp_self_assessment_score, gfgp_assessment_level,
-              kpmg_due_dilligence_score, detail, county)
+        if(gfgp_assessment_level =='Gold'):
+            assessment_level_image_url = app.get_asset_url('gold.jpeg')
+        elif(gfgp_assessment_level =='Silver'):
+            assessment_level_image_url = app.get_asset_url('silver.jpeg')
+        elif(gfgp_assessment_level == 'Bronze'):
+            assessment_level_image_url = app.get_asset_url('bronze.jpeg')
+        elif(gfgp_assessment_level == 'Platinum'):
+            assessment_level_image_url = app.get_asset_url('platinum.png')
+        else:
+            assessment_level_image_url = app.get_asset_url('')
+        
 
-        return gfgp_self_assessment_score, gfgp_assessment_level, kpmg_due_dilligence_score, detail, county
+        return gfgp_self_assessment_score, gfgp_assessment_level, kpmg_due_dilligence_score, detail, county, assessment_level_image_url
     else:
         return 0, '', 0, '', ''
 
@@ -2359,4 +3426,4 @@ def overall_update_graph(country):
 
 # Run the server
 if __name__ == "__main__":
-    app.run_server(debug=True, port=8041)
+    app.run_server(debug=True, port=8045)
